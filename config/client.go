@@ -13,6 +13,7 @@ type ConnConf struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 	Database string `yaml:"database"`
+	Timeout  int    `yaml:"timeout"`
 }
 
 // GetConnConf 获取连接配置
@@ -71,4 +72,12 @@ func (c *ConnConf) GetDatabase() string {
 		return ""
 	}
 	return c.Database
+}
+
+// GetTimeout 获取超时
+func (c *ConnConf) GetTimeout() int {
+	if c == nil {
+		return 2000
+	}
+	return c.Timeout
 }

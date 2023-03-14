@@ -6,11 +6,19 @@ client:
       username: root
       password: 12345678
       database: blog_dev
+      timeout: 2000 #超时 单位ms
     - name: test.redis
       host: 127.0.0.1
       port: 6379
       username: ""
       password: ""
+      timeout: 2000 #超时 单位ms
+    - name: test.ftp
+      host: 127.0.0.1
+      port: 21
+      username: "ftp"
+      password: "123456"
+      timeout: 3000 #超时 单位ms
 
 plugin:
   log:
