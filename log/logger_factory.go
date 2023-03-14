@@ -1,27 +1,37 @@
 package log
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/wpliap/common-wrap/config"
+)
 
 const (
-	defaultLogName  = "default"
-	defaultFileName = "common.log"
+	defaultLogName = "default"
 )
 
 var (
 	DefaultLogger Logger
 	loggers       = make(map[string]Logger)
 	rw            sync.RWMutex
+	once          sync.Once
 )
 
-func init() {
-	Register(defaultLogName, NewZapLog(defaultFileName))
+// InitLog 初始化配置的log
+func InitLog() {
+	once.Do(func() {
+		for name, conf := range config.GetLogConf() {
+			Register(name, NewZapLog(conf))
+		}
+	})
 }
 
+// Register 注册一个log
 func Register(name string, logger Logger) {
 	rw.Lock()
 	defer rw.Unlock()
 	if _, ok := loggers[name]; ok {
-		return
+		panic("register name exist " + name)
 	}
 	if name == defaultLogName {
 		DefaultLogger = logger
@@ -29,6 +39,7 @@ func Register(name string, logger Logger) {
 	loggers[name] = logger
 }
 
+// GetDefaultLogger 获取默认的log
 func GetDefaultLogger() Logger {
 	rw.RLock()
 	l := DefaultLogger
@@ -36,6 +47,7 @@ func GetDefaultLogger() Logger {
 	return l
 }
 
+// Get 通过名称获取log
 func Get(name string) Logger {
 	rw.RLock()
 	l := loggers[name]
