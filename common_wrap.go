@@ -10,5 +10,4 @@ func init() {
 		panic(err)
 	}
 	log.InitLog()
-	log.Info("common_wrap start success")
 }
