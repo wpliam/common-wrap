@@ -1,9 +1,8 @@
 package log
 
 import (
-	"sync"
-
 	"github.com/wpliap/common-wrap/config"
+	"sync"
 )
 
 const (
@@ -14,23 +13,17 @@ var (
 	DefaultLogger Logger
 	loggers       = make(map[string]Logger)
 	rw            sync.RWMutex
-	once          sync.Once
 )
 
-// InitLog 初始化配置的log
-func InitLog() {
-	once.Do(func() {
-		for name, conf := range config.GetLogConf() {
-			Register(name, NewZapLog(conf))
-		}
-	})
+func init() {
+	Register(defaultLogName, NewZapLog(config.GetLogConf(defaultLogName)))
 }
 
 // Register 注册一个log
 func Register(name string, logger Logger) {
 	rw.Lock()
 	defer rw.Unlock()
-	if _, ok := loggers[name]; ok {
+	if _, ok := loggers[name]; ok && name != defaultLogName {
 		panic("register name exist " + name)
 	}
 	if name == defaultLogName {

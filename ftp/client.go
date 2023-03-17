@@ -1,19 +1,17 @@
-package aftp
+package ftp
 
 import (
 	"fmt"
+	"github.com/wpliap/common-wrap/log"
+	"time"
+
 	"github.com/jlaffaye/ftp"
 	"github.com/wpliap/common-wrap/config"
-	"time"
 )
 
 // NewFtpProxy 创建一个ftp代理
-func NewFtpProxy(name string) *ftp.ServerConn {
-	cfg := config.GetConnConf(name)
-	if cfg == nil {
-		panic(name + " ftp conf not exist")
-	}
-	fmt.Println("timeout:", cfg.GetTimeout())
+func NewFtpProxy(name string, opt ...config.Option) *ftp.ServerConn {
+	cfg := config.GetConnConf(name, opt...)
 	addr := fmt.Sprintf("%s:%d", cfg.GetHost(), cfg.GetPort())
 	conn, err := ftp.Dial(addr, ftp.DialWithTimeout(time.Duration(cfg.GetTimeout())*time.Millisecond))
 	if err != nil {
@@ -22,5 +20,6 @@ func NewFtpProxy(name string) *ftp.ServerConn {
 	if err = conn.Login(cfg.GetUsername(), cfg.GetPassword()); err != nil {
 		panic("ftp login err " + err.Error())
 	}
+	log.Infof("create ftp proxy success name:%s host:%s port:%d", name, cfg.GetHost(), cfg.GetPort())
 	return conn
 }

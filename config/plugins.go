@@ -16,14 +16,28 @@ type LogConfig struct {
 }
 
 // GetLogConf 获取配置信息
-func GetLogConf() map[string]*LogConfig {
-	return GetConf().Plugin.Log
+func GetLogConf(name string) *LogConfig {
+	if name == "default" {
+		return defaultLogConfig()
+	}
+	return GetConf().Plugin.Log[name]
+}
+
+func defaultLogConfig() *LogConfig {
+	return &LogConfig{
+		LogPath:    "/usr/local/service/log",
+		Filename:   "flow.log",
+		MaxAge:     7,
+		MaxSize:    10,
+		MaxBackups: 10,
+		Compress:   false,
+	}
 }
 
 // GetLogPath 获取日志目录
 func (l *LogConfig) GetLogPath() string {
 	if l == nil || l.LogPath == "" {
-		return "/usr/local/src/logdata"
+		return "/usr/local/service/log"
 	}
 	return l.LogPath
 }

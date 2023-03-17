@@ -19,13 +19,19 @@ client:
       username: "ftp"
       password: "123456"
       timeout: 3000 #超时 单位ms
+    - name: test.es
+      host: 127.0.0.1
+      port: 9200
+      username: ""
+      password: ""
+      timeout: 3000 #超时 单位ms
 
 plugin:
   log:
     default:
-      log_path: /usr/local/apple/log              #本地文件日志路径
+      log_path: /usr/local/service/log              #本地文件日志路径
       filename: flow.log                    #本地文件日志文件名
       max_age: 7                              #最大日志保留天数
       max_size: 10                            #本地文件滚动日志的大小 单位 MB
       max_backups: 10                     #最大日志文件数
-      compress: true
+      compress: false

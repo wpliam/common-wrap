@@ -16,14 +16,20 @@ type ConnConf struct {
 	Timeout  int    `yaml:"timeout"`
 }
 
+type Option func(*ConnConf)
+
 // GetConnConf 获取连接配置
-func GetConnConf(name string) *ConnConf {
+func GetConnConf(name string, opt ...Option) *ConnConf {
+	connConf := &ConnConf{}
 	for _, conn := range GetConf().Client.Service {
 		if name == conn.Name {
-			return conn
+			connConf = conn
 		}
 	}
-	return nil
+	for _, o := range opt {
+		o(connConf)
+	}
+	return connConf
 }
 
 // GetName 获取名称
@@ -80,4 +86,40 @@ func (c *ConnConf) GetTimeout() int {
 		return 2000
 	}
 	return c.Timeout
+}
+
+func WithHost(host string) Option {
+	return func(o *ConnConf) {
+		o.Host = host
+	}
+}
+
+func WithPort(port uint16) Option {
+	return func(o *ConnConf) {
+		o.Port = port
+	}
+}
+
+func WithUsername(username string) Option {
+	return func(o *ConnConf) {
+		o.Username = username
+	}
+}
+
+func WithPassword(password string) Option {
+	return func(o *ConnConf) {
+		o.Password = password
+	}
+}
+
+func WithDatabase(database string) Option {
+	return func(o *ConnConf) {
+		o.Database = database
+	}
+}
+
+func WithTimeout(timeout int) Option {
+	return func(o *ConnConf) {
+		o.Timeout = timeout
+	}
 }
