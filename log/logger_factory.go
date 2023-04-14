@@ -1,7 +1,6 @@
 package log
 
 import (
-	"github.com/wpliap/common-wrap/config"
 	"sync"
 )
 
@@ -16,7 +15,7 @@ var (
 )
 
 func init() {
-	Register(defaultLogName, NewZapLog(config.GetLogConf(defaultLogName)))
+	Register(defaultLogName, NewZapLog("flow.log"))
 }
 
 // Register 注册一个log

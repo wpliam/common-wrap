@@ -7,35 +7,34 @@ import (
 	"time"
 
 	"github.com/natefinch/lumberjack"
-	"github.com/wpliap/common-wrap/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 // NewZapLog 根据配置创建一个新的zap
-func NewZapLog(cfg *config.LogConfig) Logger {
+func NewZapLog(name string) Logger {
 	return &zapLog{
 		zap.New(
-			zapcore.NewCore(getEncoder(), getLogWriter(cfg), zapcore.DebugLevel),
+			zapcore.NewCore(getEncoder(), getLogWriter(name), zapcore.DebugLevel),
 			zap.AddCallerSkip(2),
 			zap.AddCaller(),
 		),
 	}
 }
 
-func getLogWriter(cfg *config.LogConfig) zapcore.WriteSyncer {
-	logPath := cfg.GetLogPath()
+func getLogWriter(name string) zapcore.WriteSyncer {
+	logPath := "/usr/local/service/log"
 	if runtime.GOOS != "linux" {
 		dir, _ := os.Getwd()
 		logPath = filepath.Join(dir, "log")
 	}
 	return zapcore.NewMultiWriteSyncer(
 		zapcore.AddSync(&lumberjack.Logger{
-			Filename:   filepath.Join(logPath, cfg.GetFilename()),
-			MaxSize:    cfg.GetMaxSize(),
-			MaxAge:     cfg.GetMaxAge(),
-			MaxBackups: cfg.GetMaxBackups(),
-			Compress:   cfg.GetCompress(),
+			Filename:   filepath.Join(logPath, name),
+			MaxSize:    10,
+			MaxAge:     7,
+			MaxBackups: 10,
+			Compress:   false,
 		}),
 		zapcore.Lock(os.Stdout),
 	)
