@@ -1,37 +1,41 @@
 client:
   service:
-    - name: test.mysql
-      host: 127.0.0.1
-      port: 3306
-      username: root
+    - name: mysql
+      target: root:12345678@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local
+      protocol: gorm
+    - name: redis
+      target: 127.0.0.1:6379
       password: 12345678
-      database: blog_dev
-      timeout: 2000 #超时 单位ms
-    - name: test.redis
-      host: 127.0.0.1
-      port: 6379
-      username: ""
-      password: ""
-      timeout: 2000 #超时 单位ms
-    - name: test.ftp
-      host: 127.0.0.1
-      port: 21
-      username: "ftp"
-      password: "123456"
-      timeout: 3000 #超时 单位ms
-    - name: test.es
-      host: 127.0.0.1
-      port: 9200
-      username: ""
-      password: ""
-      timeout: 3000 #超时 单位ms
+      protocol: redis
+    - name: elastic
+      target: http://127.0.0.1:9200
+      username: elastic
+      password: 12345678
+      protocol: elastic
 
-plugin:
+server:
+  service:
+    - name: admin.svr
+      port: 12588
+      protocol: http
+
+plugins:
   log:
     default:
-      log_path: /usr/local/service/log              #本地文件日志路径
-      filename: flow.log                    #本地文件日志文件名
-      max_age: 7                              #最大日志保留天数
-      max_size: 10                            #本地文件滚动日志的大小 单位 MB
-      max_backups: 10                     #最大日志文件数
-      compress: false
+      caller_skip: 2
+      write_config:
+        log_path: ./log
+        filename: default.log
+        max_size: 7
+        max_age: 7
+        max_backups: 10
+        compress: false
+    test1:
+      caller_skip: 1
+      write_config:
+        log_path: ./log
+        filename: test1.log
+        max_size: 7
+        max_age: 7
+        max_backups: 10
+        compress: false

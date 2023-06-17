@@ -3,7 +3,6 @@ package log
 import (
 	"os"
 	"path/filepath"
-	"runtime"
 	"time"
 
 	"github.com/natefinch/lumberjack"
@@ -12,35 +11,34 @@ import (
 )
 
 // NewZapLog 根据配置创建一个新的zap
-func NewZapLog(name string) Logger {
+func NewZapLog(cfg *LoggerConfig) Logger {
+	callerSkip := 2
+	if cfg.CallerSkip > 0 {
+		callerSkip = cfg.CallerSkip
+	}
 	return &zapLog{
 		zap.New(
-			zapcore.NewCore(getEncoder(), getLogWriter(name), zapcore.DebugLevel),
-			zap.AddCallerSkip(2),
+			zapcore.NewCore(newEncoder(), newLogWriter(&cfg.WriteConfig), zapcore.DebugLevel),
+			zap.AddCallerSkip(callerSkip),
 			zap.AddCaller(),
 		),
 	}
 }
 
-func getLogWriter(name string) zapcore.WriteSyncer {
-	logPath := "/usr/local/service/log"
-	if runtime.GOOS != "linux" {
-		dir, _ := os.Getwd()
-		logPath = filepath.Join(dir, "log")
-	}
+func newLogWriter(cfg *WriteConfig) zapcore.WriteSyncer {
 	return zapcore.NewMultiWriteSyncer(
 		zapcore.AddSync(&lumberjack.Logger{
-			Filename:   filepath.Join(logPath, name),
-			MaxSize:    10,
-			MaxAge:     7,
-			MaxBackups: 10,
-			Compress:   false,
+			Filename:   filepath.Join(cfg.LogPath, cfg.Filename),
+			MaxSize:    cfg.MaxSize,
+			MaxAge:     cfg.MaxAge,
+			MaxBackups: cfg.MaxBackups,
+			Compress:   cfg.Compress,
 		}),
 		zapcore.Lock(os.Stdout),
 	)
 }
 
-func getEncoder() zapcore.Encoder {
+func newEncoder() zapcore.Encoder {
 	encoderConfig := zap.NewProductionEncoderConfig()
 	// 格式化时间 可自定义
 	encoderConfig.EncodeTime = func(t time.Time, encoder zapcore.PrimitiveArrayEncoder) {
