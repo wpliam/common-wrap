@@ -2,7 +2,7 @@ package server
 
 import (
 	"fmt"
-	stdhttp "github.com/wpliap/common-wrap/http"
+	stdhttp "github.com/wpliam/common-wrap/http"
 	"net/http"
 )
 

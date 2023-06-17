@@ -3,7 +3,7 @@ package redis
 import (
 	"context"
 	"github.com/redis/go-redis/v9"
-	"github.com/wpliap/common-wrap/client"
+	"github.com/wpliam/common-wrap/client"
 )
 
 func init() {

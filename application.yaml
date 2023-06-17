@@ -3,15 +3,6 @@ client:
     - name: mysql
       target: root:12345678@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local
       protocol: gorm
-    - name: redis
-      target: 127.0.0.1:6379
-      password: 12345678
-      protocol: redis
-    - name: elastic
-      target: http://127.0.0.1:9200
-      username: elastic
-      password: 12345678
-      protocol: elastic
 
 server:
   service:

@@ -1,7 +1,7 @@
 package log
 
 import (
-	"github.com/wpliap/common-wrap/plugin"
+	"github.com/wpliam/common-wrap/plugin"
 	"sync"
 )
 

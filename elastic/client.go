@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/olivere/elastic/v7"
-	"github.com/wpliap/common-wrap/client"
+	"github.com/wpliam/common-wrap/client"
 )
 
 func init() {

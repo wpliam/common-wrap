@@ -2,7 +2,7 @@ package gorm
 
 import (
 	"context"
-	"github.com/wpliap/common-wrap/client"
+	"github.com/wpliam/common-wrap/client"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
