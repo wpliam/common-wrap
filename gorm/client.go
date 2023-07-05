@@ -1,30 +1,23 @@
 package gorm
 
 import (
-	"context"
 	"github.com/wpliam/common-wrap/client"
-	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func init() {
-	client.Register("gorm", &Client{})
-}
-
-type Client struct {
-}
-
-func (c *Client) Invoke(ctx context.Context, opts ...client.Option) error {
-	o := &client.Options{}
-	for _, opt := range opts {
-		opt(o)
+var NewClientProxy = func(name string, opts ...client.Option) *gorm.DB {
+	options := make([]client.Option, 0, len(opts)+1)
+	options = append(options, opts...)
+	options = append(options,
+		client.WithProtocol("gorm"),
+	)
+	newClient := client.New()
+	if err := newClient.Invoke(name, options...); err != nil {
+		panic("gorm client invoke err" + err.Error())
 	}
-	db, err := gorm.Open(mysql.Open(o.Target), &gorm.Config{})
-	if err != nil {
-		return err
+	proxy := newClient.Get()
+	if proxy == nil {
+		panic("get gorm client proxy not exist")
 	}
-	lock.Lock()
-	defer lock.Unlock()
-	connPool[o.Name] = db
-	return nil
+	return proxy.(*gorm.DB)
 }

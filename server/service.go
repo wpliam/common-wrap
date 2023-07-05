@@ -2,15 +2,16 @@ package server
 
 import (
 	"fmt"
-	stdhttp "github.com/wpliam/common-wrap/http"
 	"net/http"
+
+	jhttp "github.com/wpliam/common-wrap/http"
 )
 
 type Service interface {
 	Listen() error
 }
 
-var NewService = func(name string, opts ...Option) Service {
+var New = func(name string, opts ...Option) Service {
 	s := &service{
 		name: name,
 		opts: &Options{},
@@ -29,9 +30,13 @@ type service struct {
 func (s *service) Listen() error {
 	switch s.opts.Protocol {
 	case "http":
+		handler := jhttp.GetHandler(s.name)
+		if handler == nil {
+			return nil
+		}
 		svr := &http.Server{
 			Addr:    fmt.Sprintf(":%d", s.opts.Port),
-			Handler: stdhttp.GetHandler(s.name).Server(),
+			Handler: handler.Server(),
 		}
 		if err := svr.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			return err

@@ -1,28 +1,46 @@
 package client
 
-import (
-	"context"
-	"sync"
-)
-
-var (
-	clients = make(map[string]Client)
-	lock    sync.RWMutex
-)
+import "github.com/wpliam/common-wrap/selector"
 
 type Client interface {
-	Invoke(ctx context.Context, opts ...Option) error
+	Invoke(name string, opts ...Option) error
+	Get() interface{}
 }
 
-func Register(name string, client Client) {
-	lock.Lock()
-	defer lock.Unlock()
-	clients[name] = client
+var New = func() Client {
+	return &client{}
 }
 
-func Get(protocol string) Client {
-	lock.RLock()
-	c := clients[protocol]
-	lock.RUnlock()
-	return c
+type client struct {
+	proxy interface{}
+}
+
+func (c *client) Invoke(name string, opts ...Option) error {
+	opt := getOptions(name)
+	if opt == nil {
+		opt = &Options{}
+	}
+	for _, o := range opts {
+		o(opt)
+	}
+	return c.selector(opt)
+}
+
+func (c *client) selector(opt *Options) error {
+	opts := make([]selector.Option, 0)
+	opts = append(opts,
+		selector.WithTarget(opt.Target),
+		selector.WithUsername(opt.Username),
+		selector.WithPassword(opt.Password),
+	)
+	proxy, err := opt.selector.Select(opts...)
+	if err != nil {
+		return err
+	}
+	c.proxy = proxy
+	return nil
+}
+
+func (c *client) Get() interface{} {
+	return c.proxy
 }

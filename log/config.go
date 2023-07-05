@@ -1,17 +1,5 @@
 package log
 
-var defaultLoggerConfig = &LoggerConfig{
-	CallerSkip: 2,
-	WriteConfig: WriteConfig{
-		Filename:   "default.log",
-		LogPath:    "./log",
-		MaxSize:    7,
-		MaxAge:     10,
-		MaxBackups: 10,
-		Compress:   false,
-	},
-}
-
 type LoggerConfig struct {
 	CallerSkip  int         `yaml:"caller_skip"`
 	WriteConfig WriteConfig `yaml:"write_config"`

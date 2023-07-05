@@ -10,9 +10,8 @@ const (
 )
 
 var (
-	DefaultLogger Logger
-	loggers       = make(map[string]Logger)
-	rw            sync.RWMutex
+	loggers = make(map[string]Logger)
+	rw      sync.RWMutex
 )
 
 func init() {
@@ -23,21 +22,12 @@ func init() {
 func Register(name string, logger Logger) {
 	rw.Lock()
 	defer rw.Unlock()
-	if _, ok := loggers[name]; ok && name != defaultLogName {
-		panic("register name exist " + name)
-	}
-	if name == defaultLogName {
-		DefaultLogger = logger
-	}
 	loggers[name] = logger
 }
 
 // GetDefaultLogger 获取默认的log
 func GetDefaultLogger() Logger {
-	rw.RLock()
-	l := DefaultLogger
-	rw.RLocker()
-	return l
+	return Get(defaultLogName)
 }
 
 // Get 通过名称获取log

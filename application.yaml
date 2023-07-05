@@ -3,11 +3,23 @@ client:
     - name: mysql
       target: root:12345678@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local
       protocol: gorm
+    - name: redis
+      target: 127.0.0.1:6379
+      password: 12345678
+      protocol: redis
+    - name: elastic
+      target: http://127.0.0.1:9200
+      username: elastic
+      password: 12345678
+      protocol: elastic
 
 server:
   service:
     - name: admin.svr
       port: 12588
+      protocol: http
+    - name: front.svr
+      port: 12688
       protocol: http
 
 plugins:
@@ -17,15 +29,6 @@ plugins:
       write_config:
         log_path: ./log
         filename: default.log
-        max_size: 7
-        max_age: 7
-        max_backups: 10
-        compress: false
-    test1:
-      caller_skip: 1
-      write_config:
-        log_path: ./log
-        filename: test1.log
         max_size: 7
         max_age: 7
         max_backups: 10

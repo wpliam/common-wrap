@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/wpliam/common-wrap/log"
 	"os"
 	"os/signal"
 	"sync"
@@ -37,6 +38,7 @@ func (svr *Server) Run() {
 				panic(fmt.Sprintf("service [%s] listen err:%v", name, err))
 			}
 		}(name, service)
+		log.Infof("service [%s] listen success process:%d", name, os.Getpid())
 	}
 	c := make(chan os.Signal, 0)
 	signal.Notify(c, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT)

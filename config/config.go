@@ -1,12 +1,14 @@
 package config
 
 import (
+	"github.com/wpliam/common-wrap/client"
+	"os"
+
 	"github.com/wpliam/common-wrap/plugin"
 	"gopkg.in/yaml.v3"
-	"os"
 )
 
-const defaultConfigPath = "./application.yaml"
+var DefaultConfigPath = "./application.yaml"
 
 type Config struct {
 	Client  ClientConfig `yaml:"client"`
@@ -15,13 +17,7 @@ type Config struct {
 }
 
 type ClientConfig struct {
-	Service []struct {
-		Name     string `yaml:"name"`
-		Target   string `yaml:"target"`
-		Username string `yaml:"username"`
-		Password string `yaml:"password"`
-		Protocol string `yaml:"protocol"`
-	} `yaml:"service"`
+	Service []client.ServiceConfig `yaml:"service"`
 }
 
 type ServerConfig struct {
@@ -34,7 +30,7 @@ type ServerConfig struct {
 
 // LoadConfig 加载配置
 func LoadConfig() (*Config, error) {
-	content, err := os.ReadFile(defaultConfigPath)
+	content, err := os.ReadFile(DefaultConfigPath)
 	if err != nil {
 		return nil, err
 	}
