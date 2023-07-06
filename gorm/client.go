@@ -11,13 +11,9 @@ var NewClientProxy = func(name string, opts ...client.Option) *gorm.DB {
 	options = append(options,
 		client.WithProtocol("gorm"),
 	)
-	newClient := client.New()
-	if err := newClient.Invoke(name, options...); err != nil {
+	proxy := client.New()
+	if err := proxy.Invoke(name, options...); err != nil {
 		panic("gorm client invoke err" + err.Error())
 	}
-	proxy := newClient.Get()
-	if proxy == nil {
-		panic("get gorm client proxy not exist")
-	}
-	return proxy.(*gorm.DB)
+	return proxy.Get().Gorm()
 }

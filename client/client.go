@@ -1,10 +1,13 @@
 package client
 
-import "github.com/wpliam/common-wrap/selector"
+import (
+	"github.com/wpliam/common-wrap/registry"
+	"github.com/wpliam/common-wrap/selector"
+)
 
 type Client interface {
 	Invoke(name string, opts ...Option) error
-	Get() interface{}
+	Get() registry.Proxy
 }
 
 var New = func() Client {
@@ -12,28 +15,28 @@ var New = func() Client {
 }
 
 type client struct {
-	proxy interface{}
+	proxy registry.Proxy
 }
 
 func (c *client) Invoke(name string, opts ...Option) error {
-	opt := getOptions(name)
-	if opt == nil {
-		opt = &Options{}
+	o := getOptions(name)
+	if o == nil {
+		o = &Options{}
 	}
-	for _, o := range opts {
-		o(opt)
+	for _, opt := range opts {
+		opt(o)
 	}
-	return c.selector(opt)
+	return c.selector(o)
 }
 
-func (c *client) selector(opt *Options) error {
+func (c *client) selector(o *Options) error {
 	opts := make([]selector.Option, 0)
 	opts = append(opts,
-		selector.WithTarget(opt.Target),
-		selector.WithUsername(opt.Username),
-		selector.WithPassword(opt.Password),
+		selector.WithTarget(o.Target),
+		selector.WithUsername(o.Username),
+		selector.WithPassword(o.Password),
 	)
-	proxy, err := opt.selector.Select(opts...)
+	proxy, err := o.selector.Select(opts...)
 	if err != nil {
 		return err
 	}
@@ -41,6 +44,6 @@ func (c *client) selector(opt *Options) error {
 	return nil
 }
 
-func (c *client) Get() interface{} {
+func (c *client) Get() registry.Proxy {
 	return c.proxy
 }

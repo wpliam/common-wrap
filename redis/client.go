@@ -11,13 +11,10 @@ var NewClientProxy = func(name string, opts ...client.Option) *redis.Client {
 	options = append(options,
 		client.WithProtocol("redis"),
 	)
-	newClient := client.New()
-	if err := newClient.Invoke(name, options...); err != nil {
+	proxy := client.New()
+	if err := proxy.Invoke(name, options...); err != nil {
 		panic("redis client invoke err" + err.Error())
 	}
-	proxy := newClient.Get()
-	if proxy == nil {
-		panic("get redis client proxy not exist")
-	}
-	return proxy.(*redis.Client)
+
+	return proxy.Get().Redis()
 }

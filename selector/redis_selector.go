@@ -3,6 +3,7 @@ package selector
 import (
 	"context"
 	"github.com/redis/go-redis/v9"
+	"github.com/wpliam/common-wrap/registry"
 )
 
 func init() {
@@ -12,18 +13,18 @@ func init() {
 type redisSelector struct {
 }
 
-func (r *redisSelector) Select(opt ...Option) (interface{}, error) {
+func (r *redisSelector) Select(opt ...Option) (registry.Proxy, error) {
 	opts := &Options{}
 	for _, o := range opt {
 		o(opts)
 	}
-	cli := redis.NewClient(&redis.Options{
+	client := redis.NewClient(&redis.Options{
 		Addr:     opts.Target,
 		Username: opts.Username,
 		Password: opts.Password,
 	})
-	if err := cli.Ping(context.Background()).Err(); err != nil {
+	if err := client.Ping(context.Background()).Err(); err != nil {
 		return nil, err
 	}
-	return cli, nil
+	return registry.NewRedisProxy(client), nil
 }

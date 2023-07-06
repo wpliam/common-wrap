@@ -1,6 +1,9 @@
 package selector
 
 import (
+	"github.com/olivere/elastic/v7"
+	"github.com/redis/go-redis/v9"
+	"github.com/wpliam/common-wrap/registry"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -12,7 +15,11 @@ func init() {
 type gormSelector struct {
 }
 
-func (g *gormSelector) Select(opt ...Option) (interface{}, error) {
+type Proxy interface {
+	*gorm.DB | *redis.Client | *elastic.Client
+}
+
+func (g *gormSelector) Select(opt ...Option) (registry.Proxy, error) {
 	opts := &Options{}
 	for _, o := range opt {
 		o(opts)
@@ -21,5 +28,5 @@ func (g *gormSelector) Select(opt ...Option) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return db, nil
+	return registry.NewGormProxy(db), nil
 }
